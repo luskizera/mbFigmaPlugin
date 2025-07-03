@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>M3 Style to Variable</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-size: 14px;
+      color: #333;
+      background: #fff;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      border-bottom: 1px solid #e5e5e5;
+    }
+
+    .header h1 {
+      font-size: 16px;
+      font-weight: 600;
+      color: #000;
+    }
+
+    .close-button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+      color: #999;
+      transition: color 0.2s;
+    }
+
+    .close-button:hover {
+      color: #333;
+    }
+
+    /* Content */
+    .content {
+      flex: 1;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .description {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 24px;
+    }
+
+    /* Status Box */
+    .status-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .status-box {
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: 6px;
+      text-align: center;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+
+    .status-box.default {
+      background: #f5f5f5;
+      color: #666;
+    }
+
+    .status-box.ready {
+      background: #dcfce7;
+      color: #166534;
+      border: 1px solid #bbf7d0;
+    }
+
+    .status-box.converting {
+      background: #e0e7ff;
+      color: #3730a3;
+      border: 1px solid #c7d2fe;
+    }
+
+    /* Button */
+    .button-container {
+      margin-top: auto;
+    }
+
+    .button {
+      width: 100%;
+      padding: 10px 16px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+    }
+
+    .button.primary {
+      background: #000;
+      color: #fff;
+    }
+
+    .button.primary:hover:not(:disabled) {
+      background: #333;
+    }
+
+    .button.secondary {
+      background: #f5f5f5;
+      color: #333;
+    }
+
+    .button.secondary:hover:not(:disabled) {
+      background: #e5e5e5;
+    }
+
+    .button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Loading spinner */
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid #fff;
+      border-radius: 50%;
+      border-top-color: transparent;
+      animation: spin 0.6s linear infinite;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+ <!-- Content -->
+  <div class="content">
+    <p class="description">
+      Convert Material 3 color styles to their matching variables
+    </p>
+
+    <div class="status-container">
+      <div class="status-box default" id="statusBox">
+        Please select at least one element
+      </div>
+    </div>
+
+    <div class="button-container">
+      <button class="button secondary" id="actionButton" disabled>
+        Select Elements
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // Estado do plugin
+    let state = {
+      selectionState: 'none', // 'none' | 'no-styles' | 'ready'
+      styleCount: 0,
+      isConverting: false
+    };
+
+    // Elementos do DOM
+    const statusBox = document.getElementById('statusBox');
+    const actionButton = document.getElementById('actionButton');
+    const closeButton = document.getElementById('closeButton');
+
+    // Atualizar UI baseado no estado
+    function updateUI() {
+      // Atualizar texto do status
+      let statusText = '';
+      let statusClass = 'default';
+      
+      if (state.isConverting) {
+        statusText = 'Converting...';
+        statusClass = 'converting';
+      } else {
+        switch (state.selectionState) {
+          case 'none':
+            statusText = 'Please select at least one element';
+            break;
+          case 'no-styles':
+            statusText = 'No M3 styles detected';
+            break;
+          case 'ready':
+            statusText = `${state.styleCount} Color Styles detected`;
+            statusClass = 'ready';
+            break;
+        }
+      }
+      
+      statusBox.textContent = statusText;
+      statusBox.className = `status-box ${statusClass}`;
+      
+      // Atualizar botão
+      const isDisabled = state.selectionState !== 'ready' || state.isConverting;
+      actionButton.disabled = isDisabled;
+      
+      if (state.isConverting) {
+        actionButton.innerHTML = '<span class="spinner"></span>Converting...';
+        actionButton.className = 'button primary';
+      } else {
+        switch (state.selectionState) {
+          case 'none':
+            actionButton.textContent = 'Select Elements';
+            actionButton.className = 'button secondary';
+            break;
+          case 'no-styles':
+            actionButton.textContent = 'Select Elements';
+            actionButton.className = 'button secondary';
+            break;
+          case 'ready':
+            actionButton.textContent = 'Convert Selection';
+            actionButton.className = 'button primary';
+            break;
+        }
+      }
+    }
+
+    // Handler para mensagens do plugin
+    window.onmessage = (event) => {
+      const msg = event.data.pluginMessage;
+      if (!msg) return;
+      
+      switch (msg.type) {
+        case 'selection-update':
+          if (!msg.hasSelection) {
+            state.selectionState = 'none';
+          } else if (msg.count === 0) {
+            state.selectionState = 'no-styles';
+          } else {
+            state.selectionState = 'ready';
+          }
+          state.styleCount = msg.count;
+          state.isConverting = false;
+          updateUI();
+          break;
+          
+        case 'converting':
+          state.isConverting = true;
+          updateUI();
+          break;
+          
+        case 'conversion-complete':
+          state.isConverting = false;
+          if (msg.failed > 0) {
+            console.error('Failed conversions:', msg.errors);
+          }
+          // Re-verificar seleção após conversão
+          setTimeout(() => {
+            parent.postMessage({ pluginMessage: { type: 'check-selection' } }, '*');
+          }, 500);
+          break;
+          
+        case 'error':
+          state.isConverting = false;
+          console.error(msg.message);
+          updateUI();
+          break;
+      }
+    };
+
+    // Event listeners
+    actionButton.addEventListener('click', () => {
+      if (!actionButton.disabled) {
+        parent.postMessage({ pluginMessage: { type: 'convert' } }, '*');
+      }
+    });
+
+    closeButton.addEventListener('click', () => {
+      parent.postMessage({ pluginMessage: { type: 'close' } }, '*');
+    });
+
+    // Verificar seleção inicial
+    parent.postMessage({ pluginMessage: { type: 'check-selection' } }, '*');
+  </script>
+</body>
+</html>
