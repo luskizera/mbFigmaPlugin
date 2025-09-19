@@ -1,5 +1,5 @@
 {
-  "name": "m3-style-to-variable",
+  "name": "mb-style-to-variable",
   "version": "1.0.0",
   "description": "Your Figma Plugin",
   "main": "code.js",

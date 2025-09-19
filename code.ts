@@ -223,5 +223,5 @@ figma.ui.onmessage = async (msg) => {
 figma.showUI(__html__, {
   width: 300,
   height: 250,
-  title: "M3 Style to Variable"
+  title: "MB Style to Variable"
 });
