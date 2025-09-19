@@ -1,8 +1,8 @@
 // M3 Style to Variable - Versão Otimizada para Material 3 Design Kit
 
 // Configuração do mapeamento
-const STYLE_PREFIX = "M3/sys/light/";
-const VARIABLE_PREFIX = "Schemes/";
+const STYLE_PREFIX = "colors/";
+const VARIABLE_PREFIX = "colors/";
 
 // Função de conversão simples e direta
 function convertStyleNameToVariableName(styleName: string): string {
@@ -12,12 +12,12 @@ function convertStyleNameToVariableName(styleName: string): string {
   
   // Remove o prefixo e converte o formato
   const token = styleName.slice(STYLE_PREFIX.length);
-  const variableName = token
+  /*const variableName = token
     .split('-')
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
-  
-  return `${VARIABLE_PREFIX}${variableName}`;
+    .join(' ');*/
+
+  return `${VARIABLE_PREFIX}${token}`;
 }
 
 // Cache para variables (evita múltiplas buscas)

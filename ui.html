@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>M3 Style to Variable</title>
+  <title>Convert Styles to Variables</title>
   <style>
     * {
       margin: 0;
@@ -158,12 +158,12 @@
  <!-- Content -->
   <div class="content">
     <p class="description">
-      Convert Material 3 color styles to their matching variables
+      Convert MyBenk <i>color styles</i> to their matching variables
     </p>
 
     <div class="status-container">
       <div class="status-box default" id="statusBox">
-        Please select at least one element
+        Please select at least one frame/section
       </div>
     </div>
 
@@ -199,10 +199,10 @@
       } else {
         switch (state.selectionState) {
           case 'none':
-            statusText = 'Please select at least one element';
+            statusText = 'Please select at least one frame/section';
             break;
           case 'no-styles':
-            statusText = 'No M3 styles detected';
+            statusText = 'No styles detected';
             break;
           case 'ready':
             statusText = `${state.styleCount} Color Styles detected`;
